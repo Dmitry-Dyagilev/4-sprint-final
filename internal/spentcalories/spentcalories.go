@@ -27,10 +27,16 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 	if err != nil {
 		return 0, "", 0, fmt.Errorf("ошибка преобразования в целое число")
 	}
+	if steps <= 0 {
+		return 0, "", 0, fmt.Errorf("количество шагов должно быть положительным")
+	}
 
 	durationWalk, err := time.ParseDuration(dataSplit[2])
 	if err != nil {
 		return 0, "", 0, fmt.Errorf("строка не соответствует указанному формату")
+	}
+	if durationWalk <= 0 {
+		return 0, "", 0, fmt.Errorf("продолжительность тренировки должна быть положительной")
 	}
 	return steps, dataSplit[1], durationWalk, nil
 }
@@ -57,6 +63,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		log.Println("Ошибка при парсинге данных:", err)
 		return "", err
 	}
+	hours := durationWalk.Hours()
 	dist := distance(steps, height)
 	speed := meanSpeed(steps, height, durationWalk)
 
@@ -71,24 +78,24 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		return "", fmt.Errorf("неизвестный тип тренировки: %s", typeTraning)
 	}
 
-	result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %s\nДистанция: %.2f км\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
-		typeTraning, durationWalk.String(), dist, speed, calories)
+	result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
+		typeTraning, hours, dist, speed, calories)
 	return result, nil
 
 }
 
 func RunningSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
 
-	if weight <= 0 || height <= 0 {
-		return 0, fmt.Errorf("с тобой все в порядке")
+	if steps <= 0 || weight <= 0 || height <= 0 || duration <= 0 {
+		return 0, fmt.Errorf("не верное значение")
 	}
 	return (meanSpeed(steps, height, duration) * weight * duration.Minutes()) / minInH, nil
 }
 
 func WalkingSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
 
-	if weight <= 0 || height <= 0 {
-		return 0, fmt.Errorf("с тобой все в порядке")
+	if steps <= 0 || weight <= 0 || height <= 0 || duration <= 0 {
+		return 0, fmt.Errorf("не верное значение")
 	}
 	return (meanSpeed(steps, height, duration) * weight * duration.Minutes()) / minInH * walkingCaloriesCoefficient, nil
 }
