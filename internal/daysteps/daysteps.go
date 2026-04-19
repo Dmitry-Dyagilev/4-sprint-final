@@ -2,6 +2,7 @@ package daysteps
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/Yandex-Practicum/tracker/internal/spentcalories"
 
@@ -36,6 +37,9 @@ func parsePackage(data string) (int, time.Duration, error) {
 	if err != nil {
 		return 0, 0, fmt.Errorf("строка не соответствует указанному формату")
 	}
+	if durationWalk <= 0 {
+		return 0, 0, fmt.Errorf("продолжительность должна быть положительной")
+	}
 	return steps, durationWalk, nil
 
 }
@@ -44,7 +48,7 @@ func DayActionInfo(data string, weight, height float64) string {
 	// TODO: реализовать функцию
 	countSteps, durationWalk, err := parsePackage(data)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("ошибка при парсинге данных:", err)
 		return ""
 	}
 	if countSteps <= 0 {
@@ -53,8 +57,9 @@ func DayActionInfo(data string, weight, height float64) string {
 	distanceKm := float64(countSteps) * stepLength / mInKm
 	calories, err := spentcalories.WalkingSpentCalories(countSteps, weight, height, durationWalk)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("ошибка при парсинге данных:", err)
+		return ""
 	}
-	result := fmt.Sprintf("Количество шагов %d\n Дистанция составила %d\n Вы сожгли %d\n", countSteps, distanceKm, calories)
+	result := fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n", countSteps, distanceKm, calories)
 	return result
 }

@@ -60,7 +60,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 
 	steps, typeTraning, durationWalk, err := parseTraining(data)
 	if err != nil {
-		log.Println("Ошибка при парсинге данных:", err)
+		log.Println("ошибка при парсинге данных:", err)
 		return "", err
 	}
 	hours := durationWalk.Hours()
